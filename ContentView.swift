@@ -150,8 +150,13 @@ struct ContentView: View {
         switch result {
         case .success(let url):
             print("loadstarted")
-            viewModel.loadScene(from: url)
-            print("loaddone")
+            if url.startAccessingSecurityScopedResource() {
+                defer { url.stopAccessingSecurityScopedResource() }
+                viewModel.loadScene(from: url)
+                print("loaddone")
+            } else {
+                print("Failed to access security scoped resource")
+            }
         case .failure(let error):
             print("Failed to import file: \(error)")
         }
