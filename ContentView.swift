@@ -44,6 +44,7 @@ class AssetsViewModel: ObservableObject {
 
     /// Load a scene from a JSON file packaged with the app bundle (defaults to
     /// `Test.json`).
+    /*
     func loadScene() {
         guard let url = Bundle.main.url(forResource: "Test", withExtension: "json") else {
             print("Test.json not found")
@@ -51,7 +52,7 @@ class AssetsViewModel: ObservableObject {
         }
 
         loadScene(from: url)
-    }
+    }*/
 
     /// Import a scene description from an arbitrary JSON file on disk.
     /// - Parameter url: The location of the JSON file to parse.
@@ -132,6 +133,7 @@ struct ContentView: View {
                 }
             }
             .fileImporter(isPresented: $isImporting, allowedContentTypes: [.json]) { result in
+                print("readytoHandleImport")
                 handleImport(result)
             }
         }
@@ -147,7 +149,9 @@ struct ContentView: View {
     private func handleImport(_ result: Result<URL, Error>) {
         switch result {
         case .success(let url):
+            print("loadstarted")
             viewModel.loadScene(from: url)
+            print("loaddone")
         case .failure(let error):
             print("Failed to import file: \(error)")
         }
