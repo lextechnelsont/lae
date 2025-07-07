@@ -10,7 +10,7 @@ struct Message: Identifiable {
             switch self {
             case .stork: return "🕊"
             case .elephant: return "🐘"
-            case .badger: return "Badger"
+            case .badger: return "BB"
             }
         }
     }
