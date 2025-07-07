@@ -1,1 +1,16 @@
-
+{
+  "assetData": {
+    "manual": "manual.pdf",
+    "model": "object.usdz"
+  },
+  "assetMetadata": {
+    "manual": {
+      "type": "PDF",
+      "description": "User manual"
+    },
+    "model": {
+      "type": "USDZ",
+      "description": "3D object"
+    }
+  }
+}
