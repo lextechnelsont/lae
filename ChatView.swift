@@ -5,7 +5,9 @@ struct Message: Identifiable {
         case stork
         case elephant
         case badger
-        
+
+
+
         var avatar: String {
             switch self {
             case .stork: return "🕊"
@@ -72,8 +74,7 @@ struct ChatView: View {
                 }
                 .padding()
             }
-            
-            HStack {
+             HStack {
                 TextField("Type a message", text: $newMessage)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 Button("Send") { sendMessage() }
@@ -88,11 +89,10 @@ struct ChatView: View {
     private func messageView(_ message: Message) -> some View {
         HStack(alignment: .bottom, spacing: 8) {
             if message.sender == .elephant { Spacer() }
-            
+
             if message.sender != .elephant {
                 Text(message.sender.avatar)
             }
-            
             Text(message.text)
                 .padding(10)
                 .foregroundColor(message.sender == .elephant ? .white : .black)
@@ -102,13 +102,12 @@ struct ChatView: View {
             if message.sender == .elephant {
                 Text(message.sender.avatar)
             }
-            
             if message.sender != .elephant { Spacer() }
         }
         .frame(maxWidth: .infinity, alignment: message.sender == .elephant ? .trailing : .leading)
     }
-    
-    private func sendMessage() {
+
+  private func sendMessage() {
         let trimmed = newMessage.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         messages.append(Message(sender: .stork, text: trimmed))
