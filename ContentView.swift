@@ -16,7 +16,7 @@ struct AssetMetadata: Codable {
 enum MetadataElement: Codable {
     case uuid(String)
     case metadata(AssetMetadata)
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let str = try? container.decode(String.self) {
@@ -41,17 +41,25 @@ struct AssetItem: Identifiable {
 
 class AssetsViewModel: ObservableObject {
     @Published var assets: [AssetItem] = []
-    
+
+    /// Load a scene from a JSON file packaged with the app bundle (defaults to
+    /// `Test.json`).
     func loadScene() {
         guard let url = Bundle.main.url(forResource: "Test", withExtension: "json") else {
             print("Test.json not found")
             return
         }
-        
+
+        loadScene(from: url)
+    }
+
+    /// Import a scene description from an arbitrary JSON file on disk.
+    /// - Parameter url: The location of the JSON file to parse.
+    func loadScene(from url: URL) {
         do {
             let data = try Data(contentsOf: url)
             let scene = try JSONDecoder().decode(SceneFile.self, from: data)
-            
+
             var dataDict: [String: String] = [:]
             for i in stride(from: 0, to: scene.assetData.count, by: 2) {
                 guard i + 1 < scene.assetData.count else { continue }
@@ -59,7 +67,7 @@ class AssetsViewModel: ObservableObject {
                 let encoded = scene.assetData[i + 1]
                 dataDict[id] = encoded
             }
-            
+
             var metaDict: [String: AssetMetadata] = [:]
             var index = 0
             while index < scene.assetMetadata.count - 1 {
@@ -69,7 +77,7 @@ class AssetsViewModel: ObservableObject {
                 }
                 index += 2
             }
-            
+
             var items: [AssetItem] = []
             for (id, encoded) in dataDict {
                 guard let data = Data(base64Encoded: encoded),
@@ -84,7 +92,7 @@ class AssetsViewModel: ObservableObject {
                     print("Failed to write file for id \(id): \(error)")
                 }
             }
-            
+
             DispatchQueue.main.async {
                 self.assets = items
             }
@@ -96,7 +104,8 @@ class AssetsViewModel: ObservableObject {
 
 struct ContentView: View {
     @StateObject private var viewModel = AssetsViewModel()
-    
+    @State private var isImporting = false
+
     var body: some View {
         NavigationView {
             List(viewModel.assets) { asset in
@@ -117,17 +126,31 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Assets")
-            .onAppear {
-                viewModel.loadScene()
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Import") { isImporting = true }
+                }
+            }
+            .fileImporter(isPresented: $isImporting, allowedContentTypes: [.json]) { result in
+                handleImport(result)
             }
         }
     }
-    
+
     private func share(url: URL) {
 #if canImport(UIKit)
         let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         UIApplication.shared.windows.first?.rootViewController?.present(activityVC, animated: true)
 #endif
+    }
+
+    private func handleImport(_ result: Result<URL, Error>) {
+        switch result {
+        case .success(let url):
+            viewModel.loadScene(from: url)
+        case .failure(let error):
+            print("Failed to import file: \(error)")
+        }
     }
 }
 

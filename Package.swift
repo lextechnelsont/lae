@@ -29,6 +29,10 @@ let package = Package(
                 .landscapeRight,
                 .landscapeLeft,
                 .portraitUpsideDown(.when(deviceFamilies: [.pad]))
+            ],
+            capabilities: [
+                .fileAccess(.downloadsFolder, mode: .readOnly),
+                .fileAccess(.userSelectedFiles, mode: .readOnly)
             ]
         )
     ],
