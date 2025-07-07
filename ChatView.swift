@@ -6,15 +6,17 @@ struct Message: Identifiable {
         case elephant
         case badger
 
+
+
         var avatar: String {
             switch self {
             case .stork: return "🕊"
             case .elephant: return "🐘"
-            case .badger: return "🦡"
+            case .badger: return "BB"
             }
         }
     }
-
+    
     let id = UUID()
     let sender: Sender
     let text: String
@@ -59,9 +61,9 @@ struct ChatView: View {
         Message(sender: .stork, text: "This will be a memory to keep."),
         Message(sender: .elephant, text: "Definitely, let's do this again soon."),
     ]
-
+    
     @State private var newMessage = ""
-
+    
     var body: some View {
         VStack {
             ScrollView {
@@ -72,8 +74,7 @@ struct ChatView: View {
                 }
                 .padding()
             }
-
-            HStack {
+             HStack {
                 TextField("Type a message", text: $newMessage)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 Button("Send") { sendMessage() }
@@ -83,7 +84,7 @@ struct ChatView: View {
         }
         .navigationTitle("Chat")
     }
-
+    
     @ViewBuilder
     private func messageView(_ message: Message) -> some View {
         HStack(alignment: .bottom, spacing: 8) {
@@ -92,23 +93,21 @@ struct ChatView: View {
             if message.sender != .elephant {
                 Text(message.sender.avatar)
             }
-
             Text(message.text)
                 .padding(10)
                 .foregroundColor(message.sender == .elephant ? .white : .black)
                 .background(message.sender == .elephant ? Color.blue : Color.gray.opacity(0.2))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-
+            
             if message.sender == .elephant {
                 Text(message.sender.avatar)
             }
-
             if message.sender != .elephant { Spacer() }
         }
         .frame(maxWidth: .infinity, alignment: message.sender == .elephant ? .trailing : .leading)
     }
 
-    private func sendMessage() {
+  private func sendMessage() {
         let trimmed = newMessage.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         messages.append(Message(sender: .stork, text: trimmed))
