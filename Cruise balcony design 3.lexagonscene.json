@@ -1,0 +1,11 @@
+{
+  "assetData": {
+    "balcony": "balcony.usdz"
+  },
+  "assetMetadata": {
+    "balcony": {
+      "type": "USDZ",
+      "description": "Cruise balcony scene"
+    }
+  }
+}
